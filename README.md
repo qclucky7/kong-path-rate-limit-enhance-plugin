@@ -29,7 +29,7 @@ kong版本: 2x
 2. 配置nginx缓存: `nginx_http_lua_shared_dict=router_shared_cache 128m` 存储api的路由树, 大小根据项目定义。超过缓存大小新的限流api则不会生效。
 
 ### 数据库创建
-1. 直接在数据库执行[SQL脚本](https://github.com/GravityMatrix/kong-path-rate-limit-enhance/kong/plugins/path_rate_limit_enhance/migrations)
+1. 直接在数据库执行[SQL脚本](https://github.com/GravityMatrix/kong-path-rate-limit-enhance-plugin/blob/main/kong/plugins/path_rate_limit_enhance/migrations/init.lua)
 2. [Kong迁移](https://docs.konghq.com/gateway/2.8.x/install-and-run/upgrade-enterprise/)
 
 ### 启用插件

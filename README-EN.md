@@ -28,7 +28,7 @@ Routing algorithm: `Prefix tree`
 2. Configure the nginx cache: `nginx_http_lua_shared_dict=router_shared_cache 128m` Store the API routing tree, size as defined by the project. If the cache size is exceeded, the new traffic limiting API will not take effect。
 
 ### Database table Create
-1. Database execute [SQL Script](https://github.com/GravityMatrix/kong-path-rate-limit-enhance/kong/plugins/path_rate_limit_enhance/migrations)
+1. Database execute [SQL Script](https://github.com/GravityMatrix/kong-path-rate-limit-enhance-plugin/blob/main/kong/plugins/path_rate_limit_enhance/migrations/init.lua)
 2. [Kong migration](https://docs.konghq.com/gateway/2.8.x/install-and-run/upgrade-enterprise/)
 
 ### Enable plugin
