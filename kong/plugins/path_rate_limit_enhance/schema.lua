@@ -43,8 +43,7 @@ return {
                     {
                         database = {
                             type = "number",
-                            required = true,
-                            gt = -1
+                            default = 0,
                         }
                     },
                     {
