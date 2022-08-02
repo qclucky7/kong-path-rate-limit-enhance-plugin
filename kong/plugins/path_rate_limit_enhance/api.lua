@@ -1,4 +1,3 @@
-local endpoints           = require "kong.api.endpoints"
 local Json                = require "cjson.safe"
 local Utils               = require "kong.plugins.path_rate_limit_enhance.tools"
 local Router              = require "kong.plugins.path_rate_limit_enhance.route.router_api"
