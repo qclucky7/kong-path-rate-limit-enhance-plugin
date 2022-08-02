@@ -1,6 +1,6 @@
 ## [Kong](https://github.com/Kong/kong) 限流插件扩展
 
-[English Documentation](https://github.com/GravityMatrix/kong-path-rate-limit-enhance/README-EN.md)
+[English Documentation](https://github.com/GravityMatrix/kong-path-rate-limit-enhance-plugin/blob/main/README-EN.md)
 
 kong版本: 2x
 
