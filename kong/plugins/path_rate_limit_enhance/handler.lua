@@ -119,7 +119,7 @@ function path_rate_limit_enhance:access(plugin_conf)
         return
     end
 
-    kong.log("result : " .. result .. "time: " .. ngx_time)
+    kong.log("result : " .. result .. " time: " .. ngx_time)
 
     -- no tokens
     if result == 0 then
