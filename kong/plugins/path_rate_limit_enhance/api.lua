@@ -211,8 +211,14 @@ local function delete_rate_limit_path_config(dao, tenant_id, route_id, service_i
             kong.log.err("[path_rate_limit_enhance] api delete_rate_limit_path_config select err: " .. err)
             goto skip
         end
-        dao:delete({
+        local result, err = dao:delete({
             id = db_path_config.id
+        }, {
+            tenant_id  = db_path_config.tenant_id,
+            route_id   = db_path_config.route_id,
+            service_id = db_path_config.service_id,
+            path       = db_path_config.path,
+            method     = db_path_config.method
         })
         if err then
             kong.log.err("[path_rate_limit_enhance] api delete_rate_limit_path_config delete err: " .. err)
