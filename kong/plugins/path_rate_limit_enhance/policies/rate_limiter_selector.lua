@@ -18,13 +18,13 @@ local function get_connection(plugin_config)
 
     local ok, err = red:connect(plugin_config.host, plugin_config.port)
     if not ok then
-        kong.log.err("[path_rate_limit_enhance] failed to connect to Redis: " .. err)
+        kong.log.err("failed to connect to Redis: " .. err)
         return nil, err
     end
 
     local times, err = red:get_reused_times()
     if err then
-        kong.log.err("[path_rate_limit_enhance] failed to get connect reused times: " .. err)
+        kong.log.err("failed to get connect reused times: " .. err)
         return nil, err
     end
 
@@ -37,14 +37,14 @@ local function get_connection(plugin_config)
                 ok, err = red:auth(plugin_config.password)
             end
             if not ok then
-                kong.log.err("[path_rate_limit_enhance] failed to auth Redis: " .. err)
+                kong.log.err("failed to auth Redis: " .. err)
                 return nil, err
             end
         end
         if plugin_config.database ~= 0 then
             local ok, err = red:select(plugin_config.database)
             if not ok then
-                kong.log.err("[path_rate_limit_enhance] failed to change Redis database: " .. err)
+                kong.log.err("failed to change Redis database: " .. err)
                 return nil, err
             end
         end
@@ -58,7 +58,7 @@ return {
             local red, err = get_connection(plugin_config)
             if not red then
                 if err then
-                    kong.log.err("[path_rate_limit_enhance] get_connection err: " .. err)
+                    kong.log.err("get_connection err: " .. err)
                 end
                 return 0, err
             end
@@ -75,13 +75,13 @@ return {
             -- 这应该改造把脚本缓存在redis。EVALSHA命令。
             local result, err = red:eval(Script.token_buckets, 2, hit_key, hit_key_timestamp, rate, capacity, timestamp, 1)
             if err then
-                kong.log.err("[path_rate_limit_enhance] red:eval err: " .. err)
+                kong.log.err("red:eval err: " .. err)
                 return 0, err
             end
 
             local ok, err = red:set_keepalive(10000, 100)
             if not ok then
-                kong.log.err("[path_rate_limit_enhance] failed to set Redis keepalive: " .. err)
+                kong.log.err("failed to set Redis keepalive: " .. err)
             end
 
             return result[1]

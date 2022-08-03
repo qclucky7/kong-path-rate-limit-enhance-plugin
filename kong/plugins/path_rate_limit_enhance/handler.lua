@@ -31,26 +31,26 @@ function path_rate_limit_enhance:access(plugin_conf)
 
     local router_id = (kong_route or EMPTY).id
     if not router_id then
-        kong.log.err("[path_rate_limit_enhance] router not found")
+        kong.log.err("router not found")
         return
     end
 
     local service_id = (kong_route.service or EMPTY).id
     if not service_id then
-        kong.log.err("[path_rate_limit_enhance] service not found")
+        kong.log.err("service not found")
         return
     end
 
     local path = kong.request.get_path()
     if not path then
-        kong.log.err("[path_rate_limit_enhance] path not found")
+        kong.log.err("path not found")
         return
     end
 
     local route_paths = (kong_route or EMPTY).paths
 
     if not route_paths then
-        kong.log.err("[path_rate_limit_enhance] route_paths is empty!")
+        kong.log.err("route_paths is empty!")
         return
     end
 
@@ -76,22 +76,22 @@ function path_rate_limit_enhance:access(plugin_conf)
     local success, route = pcall(function() return Router:new() end)
 
     if not success or not route then
-        kong.log.err("[path_rate_limit_enhance] shared dict routeTree not found " .. toString(route))
+        kong.log.err("shared dict routeTree not found " .. toString(route))
         return
     end
 
     local route_tree, err = route:fetch(route:buildKey(router_id, tenant_id))
     if not route_tree then
-        kong.log("[path_rate_limit_enhance] route_tree not found router_id: " .. router_id .. "tenant_id: " .. tenant_id)
+        kong.log("route_tree not found router_id: " .. router_id .. "tenant_id: " .. tenant_id)
         if err then
-            kong.log("[path_rate_limit_enhance] route_tree not found router_id: " .. router_id .. "tenant_id:" .. tenant_id .."error: " .. toString(err))
+            kong.log("route_tree not found router_id: " .. router_id .. "tenant_id:" .. tenant_id .."error: " .. toString(err))
         end
         return
     end
 
     local _, match_path, _, hit = RouterTree:replace(route_tree):match(path, method)
 
-    kong.log("[path_rate_limit_enhance] router match result ->  path :" .. path .. " method: " .. method .. " match_path: " .. (match_path and {match_path} or {''})[1] .. " hit: " .. toString(hit))
+    kong.log("router match result ->  path :" .. path .. " method: " .. method .. " match_path: " .. (match_path and {match_path} or {''})[1] .. " hit: " .. toString(hit))
 
     if not hit then
         return
@@ -104,22 +104,22 @@ function path_rate_limit_enhance:access(plugin_conf)
             limit_rate_path_config_cache_key)
 
     if err then
-        kong.log.err("[path_rate_limit_enhance] service select redis config error:" .. err)
+        kong.log.err("service select redis config error:" .. err)
         return
     end
     if not path_config then
-        kong.log("[path_rate_limit_enhance] service path_config not found service:" .. service_id .. " path:" .. path)
+        kong.log("service path_config not found service:" .. service_id .. " path:" .. path)
         return
     end
 
     local ngx_time = ngx.time()
     local result, err = LimitSelector[plugin_conf.algorithm].allowed(plugin_conf, path_config, ngx_time)
     if err then
-        kong.log("[path_rate_limit_enhance] service rate_limit_selector error:" .. err)
+        kong.log("service rate_limit_selector error:" .. err)
         return
     end
 
-    kong.log("[path_rate_limit_enhance] result : " .. result .. "time: " .. ngx_time)
+    kong.log("result : " .. result .. "time: " .. ngx_time)
 
     -- no tokens
     if result == 0 then

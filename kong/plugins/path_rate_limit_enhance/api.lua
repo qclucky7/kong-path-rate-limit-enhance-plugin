@@ -87,14 +87,14 @@ local function page_rate_limit_path_configs(db, tenant_id, route_id, service_id,
         kong.response.error(400, "tenant_id, route_id, service_id is must be exist")
     end
     local _page, _size, query_sql, count_query_sql = SQLTemplate.page_rate_limit_path_configs_query_sql(tenant_id, route_id, service_id, page, size, path_search)
-    kong.log("[path_rate_limit_enhance] page_rate_limit_path_configs query sql : " .. query_sql)
-    kong.log("[path_rate_limit_enhance] page_rate_limit_path_configs query count sql : " .. count_query_sql)
+    kong.log("page_rate_limit_path_configs query sql : " .. query_sql)
+    kong.log("page_rate_limit_path_configs query count sql : " .. count_query_sql)
     local err
     local rows, err, _, _ = path_config_dao.db.connector:query(query_sql)
     local count_rows, err, _, _ = path_config_dao.db.connector:query(count_query_sql)
     local pageResult = PageResult:new()
     if err then
-        kong.log.err("[path_rate_limit_enhance] page_rate_limit_path_configs err: " .. err)
+        kong.log.err("page_rate_limit_path_configs err: " .. err)
         return Json.encode(pageResult)
     end
     pageResult.page = _page
@@ -113,14 +113,14 @@ local function save_or_update_rate_limit_path_config(dao, tenant_id, route_id, s
         local method = path_config.method
         local rate = path_config.rate
         local capacity = path_config.capacity
-        kong.log("[path_rate_limit_enhance] tenant_id: " .. tenant_id .. " route_id: " .. route_id .. " service_id: " .. service_id .. " path: " .. path .. " method: " .. method)
+        kong.log("tenant_id: " .. tenant_id .. " route_id: " .. route_id .. " service_id: " .. service_id .. " path: " .. path .. " method: " .. method)
         if not path or not Utils.is_all_number(rate, capacity) or not Utils.in_array(method, methods) then
             goto skip
         end
         local key = dao:cache_key(tenant_id, route_id, service_id, path, method)
         local db_path_config, err = dao:select_by_cache_key(key)
         if err then
-            kong.log.err("[path_rate_limit_enhance] api save_rate_limit_path_config select err: " .. err)
+            kong.log.err("api save_rate_limit_path_config select err: " .. err)
         end
         if not db_path_config then
             local response, err = dao:insert({
@@ -133,7 +133,7 @@ local function save_or_update_rate_limit_path_config(dao, tenant_id, route_id, s
                 capacity   = capacity
             })
             if err then
-                kong.log.err("[path_rate_limit_enhance] api save_rate_limit_path_config insert err: " .. err)
+                kong.log.err("api save_rate_limit_path_config insert err: " .. err)
             end
             insert(insert_paths, { path, method })
         else
@@ -148,7 +148,7 @@ local function save_or_update_rate_limit_path_config(dao, tenant_id, route_id, s
                         capacity   = capacity
                     })
             if err then
-                kong.log.err("[path_rate_limit_enhance] api save_rate_limit_path_config update err: " .. err)
+                kong.log.err("api save_rate_limit_path_config update err: " .. err)
             end
         end
         ::skip::
@@ -157,7 +157,7 @@ local function save_or_update_rate_limit_path_config(dao, tenant_id, route_id, s
     if update_router then
         local success, route = pcall(function() return Router:new() end)
         if not success or not route then
-            kong.response.error(500, "[path_rate_limit_enhance] shared dict routeTree not found " .. toString(route))
+            kong.response.error(500, "shared dict routeTree not found " .. toString(route))
             return
         end
 
@@ -208,7 +208,7 @@ local function delete_rate_limit_path_config(dao, tenant_id, route_id, service_i
         local key = dao:cache_key(tenant_id, route_id, service_id, path, method)
         local db_path_config, err = dao:select_by_cache_key(key)
         if err then
-            kong.log.err("[path_rate_limit_enhance] api delete_rate_limit_path_config select err: " .. err)
+            kong.log.err("api delete_rate_limit_path_config select err: " .. err)
             goto skip
         end
         local result, err = dao:delete({
@@ -221,7 +221,7 @@ local function delete_rate_limit_path_config(dao, tenant_id, route_id, service_i
             method     = db_path_config.method
         })
         if err then
-            kong.log.err("[path_rate_limit_enhance] api delete_rate_limit_path_config delete err: " .. err)
+            kong.log.err("api delete_rate_limit_path_config delete err: " .. err)
             return kong.response.error(500, err)
         end
         ::skip::
@@ -232,7 +232,7 @@ end
 local function router_init(dao, tenant_id, route_id, service_id)
     local success, route = pcall(function() return Router:new() end)
     if not success or not route then
-        kong.response.error(500, "[path_rate_limit_enhance] shared dict routeTree not found " .. toString(route))
+        kong.response.error(500, "shared dict routeTree not found " .. toString(route))
         return
     end
     local key = route:buildKey(route_id, tenant_id)
@@ -251,7 +251,7 @@ local function router_init(dao, tenant_id, route_id, service_id)
         local success, err = route:store(key, tree)
         if not success then
             if err then
-                kong.log.err("[path_rate_limit_enhance] router_init store err:" .. err)
+                kong.log.err("router_init store err:" .. err)
             end
         end
     end
@@ -302,7 +302,7 @@ return {
             local service_id = self.params.service_id
             local success, route = pcall(function() return Router:new() end)
             if not success or not route then
-                kong.response.error(500, "[path_rate_limit_enhance] shared dict routeTree not found " .. toString(route))
+                kong.response.error(500, "shared dict routeTree not found " .. toString(route))
                 return
             end
             local result, err = route:fetch_json(route:buildKey(route_id, tenant_id))
