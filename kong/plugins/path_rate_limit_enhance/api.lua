@@ -220,6 +220,8 @@ local function delete_rate_limit_path_config(dao, tenant_id, route_id, service_i
             path       = db_path_config.path,
             method     = db_path_config.method
         })
+        local cache = kong.cache
+        cache:invalidate(key)
         if err then
             kong.log.err("api delete_rate_limit_path_config delete err: " .. err)
             return kong.response.error(500, err)
